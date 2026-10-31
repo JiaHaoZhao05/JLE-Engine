@@ -3,7 +3,6 @@
 #include "../../Editor/Log.h"
 #include "Render.h"
 #include "../FileReader.h"
-#include "../PrimitiveManager.h"
 
 #include <iostream>
 #include <memory>
@@ -46,7 +45,7 @@ bool Windows::Awake() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     // Create OpenGL window using SDL
-    window = SDL_CreateWindow("EnginishGL",
+    window = SDL_CreateWindow("JLE-Engine",
         SCREEN_WIDTH, SCREEN_HEIGHT,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );

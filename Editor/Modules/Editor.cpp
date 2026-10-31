@@ -6,7 +6,6 @@
 #include "../../Engine/Modules/Windows.h"
 #include "../../Engine/Modules/Input.h"
 #include "../../Engine/FileReader.h"
-#include "../../Engine/PrimitiveManager.h"
 #include "../Engine/GameObject.h"
 #include "ModelLoader.h"
 #include "TextureLoader.h"
@@ -198,7 +197,7 @@ bool Editor::PostUpdate() {
                     SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
                 }
                 if (ImGui::MenuItem("About")) {
-                    editorSettings.showAbout = !editorSettings.showAbout;
+                    editorSettings.showAbout = true;
                     FileReader::SetEditorSettings(editorSettings);
                 }
                 ImGui::EndMenu();
@@ -210,6 +209,7 @@ bool Editor::PostUpdate() {
         if (editorSettings.showAbout)
         {
             ImGui::Begin("About", &editorSettings.showAbout);
+            FileReader::SetEditorSettings(editorSettings);
             AddWindow("About");
 
             ImGui::Text("JLE Engine v0.1");

@@ -24,6 +24,7 @@ TextureLoader::~TextureLoader() {
 }
 bool TextureLoader::Awake() {
 	ilInit();
+	LOG("DevIL initialized");
 
 	return true;
 }
@@ -64,7 +65,7 @@ std::vector<Texture*> TextureLoader::InitMaterials(const std::string& filename, 
 				// Resolve relative paths against the FBX directory.
 				if (dirTextPath.is_relative())
 				{
-					dirTextPath = fileDir / dirTextPath; 
+					dirTextPath = fileDir / dirTextPath;
 				}
 				//Load texture
 				if (i >= newTextures.size()) {
@@ -74,13 +75,13 @@ std::vector<Texture*> TextureLoader::InitMaterials(const std::string& filename, 
 					newTextures[i] = new Texture(dirTextPath.string().c_str());
 				}
 				if (!LoadFromFile(newTextures[i],newTextures[i]->m_fileName, hasTexture)) {
-					std::cerr << "Error loading texture: " << dirTextPath.string() << std::endl;
+					LOG("TextureLoader -> InitMaterials(): Error loading texture: " + dirTextPath.string());
 					delete newTextures[i];
 					newTextures[i] = NULL;
 					return {};
 				}
 				else {
-					std::cerr << "Loaded texture: " << dirTextPath.string() << std::endl;
+					LOG("TextureLoader -> InitMaterials(): Loaded texture: " + dirTextPath.string());
 				}
 			}
 		}
@@ -96,7 +97,7 @@ bool TextureLoader::LoadFromFile(Texture* tex,const std::string& fileName, bool&
 	ilBindImage(imageID);
 
 	if (!ilLoadImage(tex->m_fileName.c_str())) {
-		std::cout << "Failed to load Texture:" << tex->m_fileName << std::endl;
+		LOG("Failed to load Texture:" + tex->m_fileName);
 		ilDeleteImages(1, &imageID);
 		return false;
 	}
@@ -142,7 +143,7 @@ bool TextureLoader::ChangeTexture(std::vector<Texture*>& m_Tex, unsigned int mat
 	}
 	// change material
 	if (!LoadFromFile(m_Tex[materialIndex], fileName, hasTexture)) {
-		std::cerr << "Error loading texture: "	<< fileName.c_str() << std::endl;
+		LOG("TextureLoader -> ChangeTexture(): Error loading texture: " + fileName);
 		delete m_Tex[materialIndex];
 		m_Tex[materialIndex] = nullptr;
 		hasTexture = false;

@@ -45,10 +45,10 @@ Mesh ModelLoader::LoadMesh(const std::string& filename) {
 		ret = InitFromScene(newMesh, pScene, filename);
 	}
 	else {
-		std::cout << "Error parsing " << filename.c_str() << ": " << importer.GetErrorString() << std::endl;
+		LOG("Error parsing " + filename + ": " + importer.GetErrorString());
 	}
 	if (!ret) {
-		std::cout << "Failed to init the model" << std::endl;
+		LOG("Failed to init the model");
 	}
 	glBindVertexArray(0);
 

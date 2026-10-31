@@ -55,13 +55,6 @@ const char* fragmentShaderSource = "\n"
 "   FragColor = vec4(vertexColor, 1.0f) * texture(tex, TexCoord) + vec4(isOutline, isOutline, isOutline, isOutline);\n"
 "}\0";
 
-//// ImGui
-//#include "imgui.h"
-//#include "imgui_impl_sdl3.h"
-//#include "imgui_impl_opengl3.h"
-//
-//#include "ImGuizmo.h"
-
 Render::Render() : Module() {
 	name = "render";
 }
@@ -71,8 +64,6 @@ Render::~Render() {
 }
 
 bool Render::Awake() {
-    //Initialize DevIL
-    //ilInit();
 	SDL_Window* window = App::GetInstance().windows->window;
 	// OpenGL is context based and thread local
 		// Link OpenGL context to SDL, after this you can load OpenGL functions and start rendering
@@ -80,7 +71,7 @@ bool Render::Awake() {
 	glContext = SDL_GL_CreateContext(window);
 	if (!glContext)
 	{
-        std::cout << "render glcontext failed" << std::endl;
+        LOG("render glcontext failed");
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 		return false;
@@ -119,44 +110,6 @@ bool Render::Awake() {
     modelViewProjLocation = glGetUniformLocation(shaderProgram, "modelViewProj");
     isOutlineLocation = glGetUniformLocation(shaderProgram, "isOutline");
 
- //   glGenVertexArrays(1, &VAO);
-
- //   glGenBuffers(1, &VBO);
-
- //   glGenBuffers(1, &EBO);
-
- //   // Bind VAO and VBO
- //   glBindVertexArray(VAO);
-
- //   // Link GL_ARRAY_BUFFER to vertices data
- //   glBindBuffer(GL_ARRAY_BUFFER, VBO);
- //   //glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-
- //   glBufferData(GL_ARRAY_BUFFER, sizeof(d20Vertices), d20Vertices, GL_STATIC_DRAW);
-
-
- //   // Link GL_ELEMENT_ARRAY_BUFFER to indices data
- //   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
- //   //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
-
- //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(d20Indices), d20Indices, GL_STATIC_DRAW);
-
-
- //   // Define Vertex layout and set attribute index
- //   glEnableVertexAttribArray(0);
- //   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-
- //   glEnableVertexAttribArray(1);
- //   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
- //   // Unlink VAO
- //   glBindBuffer(GL_ARRAY_BUFFER, 0);
- //   glBindVertexArray(0);
- //   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
- //   // Enable depth test
- //   glEnable(GL_DEPTH_TEST);
-
     // Rotate the cube over time
     SDL_GetCurrentTime(&App::GetInstance().prevTime);
 
@@ -174,25 +127,14 @@ bool Render::Awake() {
 bool Render::Update() {
     // UPDATE
     Camera& camera= *App::GetInstance().camera;
-    // View Matrix
-    //direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    //direction.y = sin(glm::radians(pitch));
-    //direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-    //viewMatrix = glm::lookAt(position, position + direction, y_axis);
-    //// Model Matrix
-    //modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation), y_axis);
-    //glm::mat4 modelViewProj = projectionMatrix * viewMatrix * modelMatrix;
     direction = camera.direction;
 
     viewMatrix = camera.viewMatrix;
     // Model Matrix
     modelMatrix = camera.modelMatrix;
     glm::mat4 modelViewProj = projectionMatrix * viewMatrix * modelMatrix;
-
-    //// Perform Rotation
-    //rotation += SPEED * App::GetInstance().dt;
-    //
+    
     // Clear screen color
     glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
 
@@ -238,7 +180,6 @@ bool Render::Update() {
     glStencilMask(0xFF);
     glUniform1f(isOutlineLocation, 0.0f);
     
-    //TODO: Think. Does each "object" (GameObject and grid) need to manage its own mvp?
     //grids matrix
     glm::mat4 gridModel = glm::mat4(1.0f);
     glm::mat4 gridMVP = projectionMatrix * viewMatrix * gridModel;
@@ -254,8 +195,6 @@ bool Render::Update() {
         auto* material = static_cast<MaterialComponent*>(gameObject->GetComponent(ComponentType::MATERIAL));
         if (!transform || !meshComponent) continue; // core Components that need to exist. We can change this.
 
-        /*transform->rotation.y += SPEED * App::GetInstance().dt;*/
-
         glm::mat4 mvp = projectionMatrix * viewMatrix * transform->modelMat;
         glUniformMatrix4fv(modelViewProjLocation, 1, GL_FALSE, glm::value_ptr(mvp));
 
@@ -266,8 +205,6 @@ bool Render::Update() {
         else {
             glBindTexture(GL_TEXTURE_2D, 0);
         }
-        /*glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, material->id);*/
 
         gameObject->Render();
         if (meshComponent->showFaceNormals) {
@@ -276,42 +213,9 @@ bool Render::Update() {
         if (meshComponent->showVertexNormals) {
             gameObject->RenderVertexNormals();
         }
-        /*glBindVertexArray(meshComponent->mesh.m_VAO);
-        glDrawElements(GL_TRIANGLES, meshComponent->n_index, GL_UNSIGNED_INT, 0);*/
-
 
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
-    // lines
-    //glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-    //glStencilMask(0x00);
-    //glUniform1f(isOutlineLocation, 1.0f);
-
-    //for (auto gameObject : App::GetInstance().scene->GetGameObjects()) {
-    //    auto* transform = static_cast<TransformComponent*>(gameObject->GetComponent(ComponentType::TRANSFORM));
-    //    auto* meshComponent = static_cast<MeshComponent*>(gameObject->GetComponent(ComponentType::MESH));
-    //    auto* material = static_cast<MaterialComponent*>(gameObject->GetComponent(ComponentType::MATERIAL));
-
-    //    //same but bigger
-    //    glm::mat4 model = glm::mat4(1.0f);
-    //    model = glm::translate(model, transform->position);
-    //    model = glm::rotate(model, glm::radians(transform->rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-    //    model = glm::scale(model, transform->scale*1.1f);
-
-    //    glm::mat4 mvp = projectionMatrix * viewMatrix * model;
-    //    glUniformMatrix4fv(modelViewProjLocation, 1, GL_FALSE, glm::value_ptr(mvp));
-    //    
-    //    glBindVertexArray(meshComponent->mesh.m_VAO);
-    //    glDrawElements(GL_TRIANGLES, meshComponent->n_index, GL_UNSIGNED_INT, 0);
-    //}
-
-    //glBindVertexArray(0);
-
-    //// Restore previous state
-    //glStencilMask(0xFF);
-    //glEnable(GL_DEPTH_TEST);
-    //glDisable(GL_STENCIL_TEST);
 
     // Unbind frame buffer, back to default
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -329,9 +233,6 @@ bool Render::CleanUp() {
 
     SDL_GL_DestroyContext(glContext);
     SDL_Quit();
-
-    //Quit DevIL
-    //ilShutDown();
     
     return true;
 }
@@ -362,7 +263,7 @@ void Render::CreateFBO(int width, int height, FrameBufferObject& frameBufferObje
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        std::cout << "Frame buffer incomplete" << std::endl;
+        LOG("RenderModule -> CreateFBO(): Frame buffer incomplete");
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
