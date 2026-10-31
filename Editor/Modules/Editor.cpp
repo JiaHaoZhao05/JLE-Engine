@@ -212,13 +212,13 @@ bool Editor::PostUpdate() {
             ImGui::Text("Welcome to the glorious JLE Engine, JLE stands for Jia, Luying and Erik.");
             ImGui::Text("By Group 1: Jia Hao Zhao Deng, Luying Bao Cheng and Erik Argemí Chinchilla");
             ImGui::TextUnformatted(R"(3rd Party Libraries Used:
-            - SDL
-            - glm
-            - sdl3
-            - opengl
-            - glad
-            - imgui
-            - imguizmo
+            - glm 3.5.1
+            - sdl3 3.5.1
+            - opengl 3.5.1
+            - imgui 1.93.0
+            - imguizmo 2.2.9
+            - assimp 6.0.5
+            - DevIL 1.8.0
             )");
             ImGui::TextUnformatted(R"(MIT License
 
@@ -360,6 +360,18 @@ bool Editor::PostUpdate() {
             }
             if (ImGui::CollapsingHeader("Hierarchy")) {
                 ShowGameObjectHierarchy(App::GetInstance().scene->GetRootGameObject());
+            }
+            if (ImGui::CollapsingHeader("Libraries Used"))
+            {
+                ImGui::TextUnformatted(R"(3rd Party Libraries Used:
+    - glm 3.5.1
+    - sdl3 3.5.1
+    - opengl 3.5.1
+    - imgui 1.93.0
+    - imguizmo 2.2.9
+    - assimp 6.0.5
+    - DevIL 1.8.0
+            )");
             }
             ImGui::End();
         }
