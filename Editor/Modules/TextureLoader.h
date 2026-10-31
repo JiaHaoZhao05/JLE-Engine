@@ -19,5 +19,14 @@ public:
 
 	bool ChangeTexture(std::vector<Texture*>& m_Tex, unsigned int materialIndex, const std::string& fileName, bool& hasTexture);
 
+	bool LoadCheckers(Texture* tex);
 
+	bool ReturnFromCheckers(Texture* tex);
+
+	bool LoadTexture(Texture* tex, const std::string& fileName);
+
+	std::string GetCheckersPath() { return checkersPath; }
+private:
+
+	std::string checkersPath = "Data/PrimitiveTextures/checkerboard.dds";
 };

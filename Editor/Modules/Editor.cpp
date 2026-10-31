@@ -455,6 +455,20 @@ bool Editor::PostUpdate() {
                     if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
                         auto* materialComponent = static_cast<MaterialComponent*>(selectedObject->GetComponent(ComponentType::MATERIAL));
                         if (materialComponent) {
+                            ImGui::Checkbox("Checkers Texture", &materialComponent->checkersTexture);
+                            if (materialComponent->checkersTexture != materialComponent->changeToCheckers) {
+                                for (const auto& texture : materialComponent->m_Textures) {
+                                    if (texture == NULL) continue;
+                                    if (materialComponent->checkersTexture)
+                                    {
+                                        App::GetInstance().textureLoader->LoadCheckers(texture);
+                                    }
+                                    else {
+                                        App::GetInstance().textureLoader->ReturnFromCheckers(texture);
+                                    }
+                                }
+                                materialComponent->changeToCheckers = materialComponent->checkersTexture;
+                            }
                             for (const auto& texture : materialComponent->m_Textures) {
                                 if (texture == NULL) continue;
                                 ImGui::Text("");
@@ -610,7 +624,7 @@ void Editor::ProcessDropFile(const std::string fileFullPath) {
         transformComponent->position = { 0,0,0 };
         materialComponent->m_Textures = App::GetInstance().textureLoader->InitMaterials(fileFullPath, materialComponent->hasTexture);
         if (!materialComponent->hasTexture) {
-            App::GetInstance().textureLoader->ChangeTexture(materialComponent->m_Textures, 0, "Data/PrimitiveTextures/checkerboard.dds", materialComponent->hasTexture);
+            App::GetInstance().textureLoader->ChangeTexture(materialComponent->m_Textures, 0, App::GetInstance().textureLoader->GetCheckersPath(), materialComponent->hasTexture);
         }
         App::GetInstance().scene->AddGameObject(std::move(newGameObject));
     }

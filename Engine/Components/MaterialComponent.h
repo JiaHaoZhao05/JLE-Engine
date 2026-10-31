@@ -21,6 +21,8 @@ public:
 	ILint height = 1;
 	GLuint id = 0;
 
+	bool changeToCheckers = false;
+	bool checkersTexture = false;
 	bool hasTexture = false;
 	std::vector<Texture*>  m_Textures;
 private:
