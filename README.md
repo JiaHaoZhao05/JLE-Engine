@@ -38,4 +38,5 @@ This is a game engine made for our Videogame engine course for 3D videogames.
 * Added dragbars to the inspector window that transforms selected objects.
 * Added Camera sliders in the Configuration Window that allows adjusting of movement speed and sensitivity.
 * Added panning to the camera with middle mouse button.
+* Added the option to add a .fbx through opening a file explorer and confirming through the file explorer.
 

@@ -102,7 +102,7 @@ bool Scene::Start() {
 	App::GetInstance().scene->AddGameObject(std::move(newGameObject));
 
 	auto newGameObject2 = std::make_unique<GameObject>();
-	newGameObject2->name = "Lash";
+	newGameObject2->name = "Sr. China";
 	newGameObject2->CreateComponents({ ComponentType::MESH, ComponentType::TRANSFORM, ComponentType::MATERIAL });
 
 	auto* meshComponent2 = static_cast<MeshComponent*>(newGameObject2->GetComponent(ComponentType::MESH));
