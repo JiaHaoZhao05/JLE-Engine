@@ -3,5 +3,6 @@
     "showConfig": true,
     "showConsole": true,
     "showInspector": true,
-    "showScene": true
+    "showScene": true,
+    "showHierarchy": true
 }

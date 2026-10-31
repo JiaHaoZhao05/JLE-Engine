@@ -44,8 +44,9 @@ EditorSettings FileReader::GetEditorSettings()
 	bool showScene = file["showScene"];
 	bool showInspector = file["showInspector"];
 	bool showConsole = file["showConsole"];
+	bool showHierarchy = file["showHierarchy"];
 
-	return EditorSettings(showAbout, showConfig, showScene, showInspector, showConsole);
+	return EditorSettings(showAbout, showConfig, showScene, showInspector, showConsole, showHierarchy);
 }
 
 void FileReader::SetEditorSettings(const EditorSettings& editorSettings)
@@ -58,6 +59,7 @@ void FileReader::SetEditorSettings(const EditorSettings& editorSettings)
 	editorSettingsFile["showScene"] = editorSettings.showScene;
 	editorSettingsFile["showInspector"] = editorSettings.showInspector;
 	editorSettingsFile["showConsole"] = editorSettings.showConsole;
+	editorSettingsFile["showHierarchy"] = editorSettings.showHierarchy;
 
 	std::ofstream out(path);
 	out << std::setw(4) << editorSettingsFile << std::endl;
