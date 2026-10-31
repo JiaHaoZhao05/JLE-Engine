@@ -75,7 +75,7 @@ bool Editor::Awake() {
     ImGui_ImplSDL3_InitForOpenGL(window, glContext);
     ImGui_ImplOpenGL3_Init();
 
-    flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;// | ImGuiConfigFlags_DockingEnable;
+    flags = ImGuiWindowFlags_NoCollapse;// | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
     
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
    
@@ -152,70 +152,74 @@ bool Editor::PostUpdate() {
         ImGui::End();
     }
 
-        if (editorSettings.showConsole) {
-            App::GetInstance().log.DrawConsole();
-        }
+    if (editorSettings.showConsole) {
+        App::GetInstance().log.DrawConsole();
+    }
 
         // Header Menu Bar
-        if (ImGui::BeginMainMenuBar()) {
-            if (ImGui::BeginMenu("File")) {
-                if (ImGui::MenuItem("Exit")) {
-                    exit(0);
-                }
-                if (ImGui::MenuItem("Import 3D")) {
-                    FileExplorerFor3D();
-                }
-                ImGui::EndMenu();
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) {
+                return false;
             }
-            if (ImGui::BeginMenu("View")) {
-                if (ImGui::MenuItem("Configuraton Window")) {
-                    editorSettings.showConfig = !editorSettings.showConfig;
-                    FileReader::SetEditorSettings(editorSettings);
-                }
-                if (ImGui::MenuItem("Scene")) {
-                    editorSettings.showScene = !editorSettings.showScene;
-                    FileReader::SetEditorSettings(editorSettings);
-                }
-                if (ImGui::MenuItem("Inspector")) {
-                    editorSettings.showInspector = !editorSettings.showInspector;
-                    FileReader::SetEditorSettings(editorSettings);
-                }
-                if (ImGui::MenuItem("Console")) {
-                    editorSettings.showConsole = !editorSettings.showConsole;
-                    FileReader::SetEditorSettings(editorSettings);
-                }
-                ImGui::EndMenu();
+            if (ImGui::MenuItem("Import 3D")) {
+                FileExplorerFor3D();
             }
-            if (ImGui::BeginMenu("Help")) {
-                if (ImGui::MenuItem("Github Documentation")) {
-                    SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine#gameenginetemplate");
-                }
-                if (ImGui::MenuItem("Report a Bug")) {
-                    SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine/issues");
-                }
-                if (ImGui::MenuItem("Download Latest:")) {
-                    SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
-                }
-                if (ImGui::MenuItem("About")) {
-                    editorSettings.showAbout = true;
-                    FileReader::SetEditorSettings(editorSettings);
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMainMenuBar();
+            ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Configuraton Window")) {
+                editorSettings.showConfig = !editorSettings.showConfig;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            if (ImGui::MenuItem("Scene")) {
+                editorSettings.showScene = !editorSettings.showScene;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            if (ImGui::MenuItem("Inspector")) {
+                editorSettings.showInspector = !editorSettings.showInspector;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            if (ImGui::MenuItem("Console")) {
+                editorSettings.showConsole = !editorSettings.showConsole;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            if (ImGui::MenuItem("Hierarchy")) {
+                editorSettings.showHierarchy = !editorSettings.showHierarchy;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Help")) {
+            if (ImGui::MenuItem("Github Documentation")) {
+                SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine#gameenginetemplate");
+            }
+            if (ImGui::MenuItem("Report a Bug")) {
+                SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine/issues");
+            }
+            if (ImGui::MenuItem("Download Latest:")) {
+                SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
+            }
+            if (ImGui::MenuItem("About")) {
+                editorSettings.showAbout = true;
+                FileReader::SetEditorSettings(editorSettings);
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 
         //about us window with license and credits
-        if (editorSettings.showAbout)
-        {
-            ImGui::Begin("About", &editorSettings.showAbout);
-            FileReader::SetEditorSettings(editorSettings);
-            AddWindow("About");
+    if (editorSettings.showAbout)
+    {
+        ImGui::Begin("About", &editorSettings.showAbout);
+        FileReader::SetEditorSettings(editorSettings);
+        AddWindow("About");
 
-            ImGui::Text("JLE Engine v0.1");
-            ImGui::Text("Welcome to the glorious JLE Engine, JLE stands for Jia, Luying and Erik.");
-            ImGui::Text("By Group 1: Jia Hao Zhao Deng, Luying Bao Cheng and Erik Argemí Chinchilla");
-            ImGui::TextUnformatted(R"(3rd Party Libraries Used:
+        ImGui::Text("JLE Engine v0.1");
+        ImGui::Text("Welcome to the glorious JLE Engine, JLE stands for Jia, Luying and Erik.");
+        ImGui::Text("By Group 1: Jia Hao Zhao Deng, Luying Bao Cheng and Erik Argemí Chinchilla");
+        ImGui::TextUnformatted(R"(3rd Party Libraries Used:
             - glm 3.5.1
             - sdl3 3.5.1
             - opengl 3.5.1
@@ -224,7 +228,7 @@ bool Editor::PostUpdate() {
             - assimp 6.0.5
             - DevIL 1.8.0
             )");
-            ImGui::TextUnformatted(R"(MIT License
+        ImGui::TextUnformatted(R"(MIT License
 
             Copyright (c) 2026 Jia Hao Zhao Deng & Luying Bao Cheng & Erik Argemí Chinchilla
 
@@ -245,235 +249,247 @@ bool Editor::PostUpdate() {
             LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
             OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
             SOFTWARE.)");
-            ImGui::End();
-        }
+        ImGui::End();
+    }
 
         //Configuration window
-        if (editorSettings.showConfig) {
-            ImGui::Begin("Configuration window", nullptr, flags);
-            AddWindow("Configuration window");
-            if (ImGui::CollapsingHeader("Application"))
-            {
-                ImGui::Text("JLE-Engine");
-                ImGui::Text("UPC CITM");
+    if (editorSettings.showConfig) {
+        ImGui::Begin("Configuration window", nullptr, flags);
+        AddWindow("Configuration window");
+        if (ImGui::CollapsingHeader("Application")) {
+            ImGui::Text("JLE-Engine");
+            ImGui::Text("UPC CITM");
 
-                int max_fps_int = App::GetInstance().max_fps;
-                ImGui::SliderInt("Max FPS", &max_fps_int, 0, 120, ImGuiSliderFlags(ImGuiSliderFlags_None));
-                App::GetInstance().max_fps = max_fps_int;
+            int max_fps_int = App::GetInstance().max_fps;
+            ImGui::SliderInt("Max FPS", &max_fps_int, 0, 120, ImGuiSliderFlags(ImGuiSliderFlags_None));
+            App::GetInstance().max_fps = max_fps_int;
 
-                char title[30];
-                sprintf_s(title, 30, "Framerate %.f", App::GetInstance().fps_log[App::GetInstance().fps_log.size() - 1]);
-                ImGui::PlotHistogram("##framerate", &App::GetInstance().fps_log[0], App::GetInstance().fps_log.size(), 0, title, 0.0f, 120.0f, ImVec2(310, 100));
-                sprintf_s(title, 30, "Milliseconds %.f", App::GetInstance().ms_log[App::GetInstance().ms_log.size() - 1]);
-                ImGui::PlotHistogram("##milliseconds", &App::GetInstance().ms_log[0], App::GetInstance().ms_log.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
-            }
-            if (ImGui::CollapsingHeader("Window"))
-            {
-                RenderSettings renderSettings = FileReader::GetRenderSettings();
-
-                ImGui::SliderFloat("Brightness", &brightness, 0.1, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
-
-                static int currentSize = 1;
-                if (ImGui::Combo("Window sizes", &currentSize, windowSizes, GLM_COUNTOF(windowSizes))) {
-                    SDL_SetWindowSize(window, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
-                    glViewport(0, 0, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
-                    renderSettings.windowsSizeX = windowSizesValues[currentSize].x;
-                    renderSettings.windowsSizeY = windowSizesValues[currentSize].y;
-                    FileReader::SetRenderSettings(renderSettings);
-                }
-
-                ImGui::Text("Refresh rate: %i", (int)App::GetInstance().fps);
-
-                if (ImGui::Checkbox("Fullscreen", &windowSettings.fullScreen)) {
-                    SDL_SetWindowFullscreen(window, windowSettings.fullScreen);
-                    FileReader::SetWindowSettings(windowSettings);
-                }
-
-                if (ImGui::Checkbox("Resizable", &windowSettings.resizable)) {
-                    SDL_SetWindowResizable(window, windowSettings.resizable);
-                    FileReader::SetWindowSettings(windowSettings);
-                }
-
-                if (ImGui::Checkbox("Borderless", &windowSettings.borderless)) {
-                    SDL_SetWindowBordered(window, !windowSettings.borderless);
-                    FileReader::SetWindowSettings(windowSettings);
-                }
-            }
-            if (ImGui::CollapsingHeader("Hardware")) {
-                //get info from the cpu
-                const cpu_features::X86Features features = cpu_features::GetX86Info().features;
-                std::string capsCPU = GetCapsFromCpu(features);
-                pFactory.reset();
-                adapter.reset();
-
-                HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)&pFactory);
-                pFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(&adapter));
-                pFactory->Release();
-                DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
-                adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
-                adapter->Release();
-                size_t usedVRAM = videoMemoryInfo.CurrentUsage / 1024 / 1024;
-                //end of stack overflow copy-paste
-                size_t availableVRAM = videoMemoryInfo.AvailableForReservation / 1024 / 1024;
-                size_t budgetVRAM = videoMemoryInfo.Budget / 1024 / 1024;
-                size_t reservedVRAM = videoMemoryInfo.CurrentReservation / 1024 / 1024;
-
-                ImGui::Separator();
-                ImGui::Text("CPUs: %i (Cache: %ikb)", SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize());
-                int systemRAM = SDL_GetSystemRAM();
-                ImGui::Text("System RAM: %.2f %s", (systemRAM > 1024) ? (float)systemRAM / 1024 : (float)systemRAM, (systemRAM > 1024) ? "Gb" : "Mb");
-                ImGui::Text("Caps: %s", capsCPU.c_str());
-                ImGui::Separator();
-                ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
-                ImGui::Text("Brand: %s", glGetString(GL_RENDERER));
-                ImGui::Text("VRAM budget: %.2f %s", (budgetVRAM > 1024) ? (float)budgetVRAM / 1024 : (float)budgetVRAM, (budgetVRAM > 1024) ? "Gb" : "Mb");
-                ImGui::Text("VRAM usage: %.2f %s", (usedVRAM > 1024) ? (float)usedVRAM / 1024 : (float)usedVRAM, (usedVRAM > 1024) ? "Gb" : "Mb");
-                ImGui::Text("VRAM available: %.2f %s", (availableVRAM > 1024) ? (float)availableVRAM / 1024 : (float)availableVRAM, (availableVRAM > 1024) ? "Gb" : "Mb");
-                ImGui::Text("VRAM reserved: %.2f %s", (reservedVRAM > 1024) ? (float)reservedVRAM / 1024 : (float)reservedVRAM, (reservedVRAM > 1024) ? "Gb" : "Mb");
-
-            }
-            if (ImGui::CollapsingHeader("Camera")) {
-                Camera& camera = *App::GetInstance().camera;
-                ImGui::SliderFloat("Movement Speed", &camera.movementSpeed, 0.1, 15.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
-                ImGui::SliderFloat("Mouse Sensitivity", &camera.sensitivity, 0.1, 2.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
-                ImGui::SliderFloat("Panning Sensitivity", &camera.panningSensitivity, 0.01, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
-
-                if (ImGui::Button("Reset To Default Values")) {
-                    camera.movementSpeed = 5.0f;
-                    camera.sensitivity = 0.5f;
-                    camera.panningSensitivity = 0.1f;
-                }
-            }
-            if (ImGui::CollapsingHeader("Primitives")) {
-                if (ImGui::Button("Icosahedron")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Icosahedron(), { 0,0,0 }, "Icosahedron"));
-                    LOG("Icosahdron created.\n");
-                }
-                if (ImGui::Button("Cube")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Cube(), { 0,0,0 }, "Cube"));
-                    LOG("Cube created.\n");
-                }
-                if (ImGui::Button("Pyramid")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Pyramid(), { 0,0,0 }, "Pyramid"));
-                    LOG("Pyramid created.\n");
-                }
-                if (ImGui::Button("Sphere")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Sphere(), { 0,0,0 }, "Sphere"));
-                    LOG("Sphere created.\n");
-                }
-                if (ImGui::Button("Cylinder")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Cylinder(), { 0,0,0 }, "Cylinder"));
-                    LOG("Cylinder created.\n");
-                }
-                if (ImGui::Button("Tetrahedron")) {
-                    App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Tetrahedron(), { 0,0,0 }, "Tetrahedron"));
-                    LOG("Tetrahedron created.\n");
-                }
-            }
-            if (ImGui::CollapsingHeader("Hierarchy")) {
-                ShowGameObjectHierarchy(App::GetInstance().scene->GetRootGameObject());
-            }
-            if (ImGui::CollapsingHeader("Libraries Used"))
-            {
-                ImGui::TextUnformatted(R"(3rd Party Libraries Used:
-    - glm 3.5.1
-    - sdl3 3.5.1
-    - opengl 3.5.1
-    - imgui 1.93.0
-    - imguizmo 2.2.9
-    - assimp 6.0.5
-    - DevIL 1.8.0
-            )");
-            }
-            ImGui::End();
+            char title[30];
+            sprintf_s(title, 30, "Framerate %.f", App::GetInstance().fps_log[App::GetInstance().fps_log.size() - 1]);
+            ImGui::PlotHistogram("##framerate", &App::GetInstance().fps_log[0], App::GetInstance().fps_log.size(), 0, title, 0.0f, 120.0f, ImVec2(310, 100));
+            sprintf_s(title, 30, "Milliseconds %.f", App::GetInstance().ms_log[App::GetInstance().ms_log.size() - 1]);
+            ImGui::PlotHistogram("##milliseconds", &App::GetInstance().ms_log[0], App::GetInstance().ms_log.size(), 0, title, 0.0f, 40.0f, ImVec2(310, 100));
         }
+        if (ImGui::CollapsingHeader("Window")) {
+            RenderSettings renderSettings = FileReader::GetRenderSettings();
 
+            ImGui::SliderFloat("Brightness", &brightness, 0.1, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
+
+            static int currentSize = 1;
+            if (ImGui::Combo("Window sizes", &currentSize, windowSizes, GLM_COUNTOF(windowSizes))) {
+                SDL_SetWindowSize(window, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
+                glViewport(0, 0, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
+                renderSettings.windowsSizeX = windowSizesValues[currentSize].x;
+                renderSettings.windowsSizeY = windowSizesValues[currentSize].y;
+                FileReader::SetRenderSettings(renderSettings);
+            }
+
+            ImGui::Text("Refresh rate: %i", (int)App::GetInstance().fps);
+
+            if (ImGui::Checkbox("Fullscreen", &windowSettings.fullScreen)) {
+                SDL_SetWindowFullscreen(window, windowSettings.fullScreen);
+                FileReader::SetWindowSettings(windowSettings);
+            }
+
+            if (ImGui::Checkbox("Resizable", &windowSettings.resizable)) {
+                SDL_SetWindowResizable(window, windowSettings.resizable);
+                FileReader::SetWindowSettings(windowSettings);
+            }
+
+            if (ImGui::Checkbox("Borderless", &windowSettings.borderless)) {
+                SDL_SetWindowBordered(window, !windowSettings.borderless);
+                FileReader::SetWindowSettings(windowSettings);
+            }
+        }
+        if (ImGui::CollapsingHeader("Hardware")) {
+            //get info from the cpu
+            const cpu_features::X86Features features = cpu_features::GetX86Info().features;
+            std::string capsCPU = GetCapsFromCpu(features);
+            pFactory.reset();
+            adapter.reset();
+
+            HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)&pFactory);
+            pFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(&adapter));
+            pFactory->Release();
+            DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+            adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
+            adapter->Release();
+            size_t usedVRAM = videoMemoryInfo.CurrentUsage / 1024 / 1024;
+            //end of stack overflow copy-paste
+            size_t availableVRAM = videoMemoryInfo.AvailableForReservation / 1024 / 1024;
+            size_t budgetVRAM = videoMemoryInfo.Budget / 1024 / 1024;
+            size_t reservedVRAM = videoMemoryInfo.CurrentReservation / 1024 / 1024;
+
+            ImGui::Separator();
+            ImGui::Text("CPUs: %i (Cache: %ikb)", SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize());
+            int systemRAM = SDL_GetSystemRAM();
+            ImGui::Text("System RAM: %.2f %s", (systemRAM > 1024) ? (float)systemRAM / 1024 : (float)systemRAM, (systemRAM > 1024) ? "Gb" : "Mb");
+            ImGui::Text("Caps: %s", capsCPU.c_str());
+            ImGui::Separator();
+            ImGui::Text("Vendor: %s", glGetString(GL_VENDOR));
+            ImGui::Text("Brand: %s", glGetString(GL_RENDERER));
+            ImGui::Text("VRAM budget: %.2f %s", (budgetVRAM > 1024) ? (float)budgetVRAM / 1024 : (float)budgetVRAM, (budgetVRAM > 1024) ? "Gb" : "Mb");
+            ImGui::Text("VRAM usage: %.2f %s", (usedVRAM > 1024) ? (float)usedVRAM / 1024 : (float)usedVRAM, (usedVRAM > 1024) ? "Gb" : "Mb");
+            ImGui::Text("VRAM available: %.2f %s", (availableVRAM > 1024) ? (float)availableVRAM / 1024 : (float)availableVRAM, (availableVRAM > 1024) ? "Gb" : "Mb");
+            ImGui::Text("VRAM reserved: %.2f %s", (reservedVRAM > 1024) ? (float)reservedVRAM / 1024 : (float)reservedVRAM, (reservedVRAM > 1024) ? "Gb" : "Mb");
+
+        }
+        if (ImGui::CollapsingHeader("Camera")) {
+            Camera& camera = *App::GetInstance().camera;
+            ImGui::SliderFloat("Movement Speed", &camera.movementSpeed, 0.1, 15.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
+            ImGui::SliderFloat("Mouse Sensitivity", &camera.sensitivity, 0.1, 2.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
+            ImGui::SliderFloat("Panning Sensitivity", &camera.panningSensitivity, 0.01, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
+
+            if (ImGui::Button("Reset To Default Values")) {
+                camera.movementSpeed = 5.0f;
+                camera.sensitivity = 0.5f;
+                camera.panningSensitivity = 0.1f;
+            }
+        }
+        if (ImGui::CollapsingHeader("Primitives")) {
+            if (ImGui::Button("Icosahedron")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Icosahedron(), { 0,0,0 }, "Icosahedron"));
+                LOG("Icosahdron created.\n");
+            }
+            if (ImGui::Button("Cube")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Cube(), { 0,0,0 }, "Cube"));
+                LOG("Cube created.\n");
+            }
+            if (ImGui::Button("Pyramid")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Pyramid(), { 0,0,0 }, "Pyramid"));
+                LOG("Pyramid created.\n");
+            }
+            if (ImGui::Button("Sphere")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Sphere(), { 0,0,0 }, "Sphere"));
+                LOG("Sphere created.\n");
+            }
+            if (ImGui::Button("Cylinder")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Cylinder(), { 0,0,0 }, "Cylinder"));
+                LOG("Cylinder created.\n");
+            }
+            if (ImGui::Button("Tetrahedron")) {
+                App::GetInstance().scene->AddGameObject(App::GetInstance().scene->CreatePrimitive(Tetrahedron(), { 0,0,0 }, "Tetrahedron"));
+                LOG("Tetrahedron created.\n");
+            }
+        }
+        if (ImGui::CollapsingHeader("Libraries Used")) {
+            ImGui::TextUnformatted(R"(3rd Party Libraries Used:
+- glm 3.5.1
+- sdl3 3.5.1
+- opengl 3.5.1
+- imgui 1.93.0
+- imguizmo 2.2.9
+- assimp 6.0.5
+- DevIL 1.8.0
+            )");
+        }
+        ImGui::End();
+    }
+    if (editorSettings.showHierarchy) {
+        if (ImGui::Begin("Hierarchy")) {
+            ShowGameObjectHierarchy(App::GetInstance().scene->GetRootGameObject());
+        }
+        ImGui::End();
+    }
 		//Inspector window
-        if (editorSettings.showInspector) {
-            if (ImGui::Begin("Inspector")) {
+    if (editorSettings.showInspector) {
+        if (ImGui::Begin("Inspector")) {
+            //need the scene to get the currently selected gameobject
+            GameObject* selectedObject = App::GetInstance().scene->GetSelectedGameObject();
 
-                //need the scene to get the currently selected gameobject
-                GameObject* selectedObject = App::GetInstance().scene->GetSelectedGameObject();
+            if (selectedObject != nullptr) {
+                ImGui::Text("Name: %s", selectedObject->name.c_str());
+                auto* transform = static_cast<TransformComponent*>(selectedObject->GetComponent(ComponentType::TRANSFORM));
 
-                if (selectedObject != nullptr) {
-                    ImGui::Text("Name: %s", selectedObject->name.c_str());
-                    auto* transform = static_cast<TransformComponent*>(selectedObject->GetComponent(ComponentType::TRANSFORM));
+                ImGui::SliderFloat("Transform Increments", &transformIncrements, 0.1, 5.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
 
-                    ImGui::SliderFloat("Transform Increments", &transformIncrements, 0.1, 5.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
+                ImGui::Text("TRAMSFORM");
+                ImGui::Text("");
+                //Position
+                ImGui::Text("Position");
+                ImGui::DragFloat3("P", &transform->position.x, transformIncrements); //DO NOT REMOVE THE STRING IN ANY OF THESE DRAGFLOAT3
+                ImGui::Text("X: %f", transform->position.x);
+                ImGui::Text("Y: %f", transform->position.y);
+                ImGui::Text("Z: %f", transform->position.z);
+                ImGui::Text("");
+                //Rotation
+                ImGui::Text("Rotation");
+                ImGui::DragFloat3("R", &transform->rotation.x, transformIncrements);
+                ImGui::Text("X: %f", transform->rotation.x);
+                ImGui::Text("Y: %f", transform->rotation.y);
+                ImGui::Text("Z: %f", transform->rotation.z);
+                ImGui::Text("");
+                //Scale
+                ImGui::Text("Scale");
+                ImGui::DragFloat3("S", &transform->scale.x, transformIncrements);
+                ImGui::Text("X: %f", transform->scale.x);
+                ImGui::Text("Y: %f", transform->scale.y);
+                ImGui::Text("Z: %f", transform->scale.z);
+                ImGui::Text("");
+                if (ImGui::Button("RESET TO DEFAULT")) {
+                    transform->position = glm::vec3(0.0f);
+                    transform->rotation = glm::vec3(0.0f);
+                    transform->scale = glm::vec3(1.0f);
+                }
 
-                    ImGui::Text("TRAMSFORM");
-                    ImGui::Text("");
-                    //Position
-                    ImGui::Text("Position");
-                    ImGui::DragFloat3("P", &transform->position.x, transformIncrements); //DO NOT REMOVE THE STRING IN ANY OF THESE DRAGFLOAT3
-                    ImGui::Text("X: %f", transform->position.x);
-                    ImGui::Text("Y: %f", transform->position.y);
-                    ImGui::Text("Z: %f", transform->position.z);
-                    ImGui::Text("");
-                    //Rotation
-                    ImGui::Text("Rotation");
-                    ImGui::DragFloat3("R", &transform->rotation.x, transformIncrements);
-                    ImGui::Text("X: %f", transform->rotation.x);
-                    ImGui::Text("Y: %f", transform->rotation.y);
-                    ImGui::Text("Z: %f", transform->rotation.z);
-                    ImGui::Text("");
-                    //Scale
-                    ImGui::Text("Scale");
-                    ImGui::DragFloat3("S", &transform->scale.x, transformIncrements);
-                    ImGui::Text("X: %f", transform->scale.x);
-                    ImGui::Text("Y: %f", transform->scale.y);
-                    ImGui::Text("Z: %f", transform->scale.z);
-                    ImGui::Text("");
-                    if (ImGui::Button("RESET TO DEFAULT")) {
-                        transform->position = glm::vec3(0.0f);
-                        transform->rotation = glm::vec3(0.0f);
-                        transform->scale = glm::vec3(1.0f);
+                // Mesh information
+                if (ImGui::CollapsingHeader("MESH", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    auto* meshComponent = static_cast<MeshComponent*>(selectedObject->GetComponent(ComponentType::MESH));
+                    if (meshComponent) {
+                        Mesh& mesh = meshComponent->mesh;
+
+                        ImGui::Text("Vertices: %i", mesh.m_Positions.size());
+                        ImGui::Text("Normals: %i", mesh.m_vertexNormals.size());
+                        ImGui::Text("Indices: %i", mesh.m_Indices.size());
+                        ImGui::Text("Submeshes: %i", mesh.m_Meshes.size());
+                        //ImGui::Text("Textures: %i", mesh.m_Textures.size());
+
+                        ImGui::Text("");
+
+                        ImGui::Checkbox("Show Vertex Normals", &meshComponent->showVertexNormals);
+                        ImGui::Checkbox("Show Face Normals", &meshComponent->showFaceNormals);
                     }
-
-                    // Mesh information
-                    if (ImGui::CollapsingHeader("MESH", ImGuiTreeNodeFlags_DefaultOpen)) {
-                        auto* meshComponent = static_cast<MeshComponent*>(selectedObject->GetComponent(ComponentType::MESH));
-                        if (meshComponent) {
-                            Mesh& mesh = meshComponent->mesh;
-
-                            ImGui::Text("Vertices: %i", mesh.m_Positions.size());
-                            ImGui::Text("Normals: %i", mesh.m_vertexNormals.size());
-                            ImGui::Text("Indices: %i", mesh.m_Indices.size());
-                            ImGui::Text("Submeshes: %i", mesh.m_Meshes.size());
-                            //ImGui::Text("Textures: %i", mesh.m_Textures.size());
-
-                            ImGui::Text("");
-
-                            ImGui::Checkbox("Show Vertex Normals", &meshComponent->showVertexNormals);
-                            ImGui::Checkbox("Show Face Normals", &meshComponent->showFaceNormals);
-                        }
-                        else {
-                            ImGui::Text("No mesh");
-                        }
+                    else {
+                        ImGui::Text("No mesh");
                     }
+                }
 
-                    if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
-                        auto* materialComponent = static_cast<MaterialComponent*>(selectedObject->GetComponent(ComponentType::MATERIAL));
-                        if (materialComponent) {
+                if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    auto* materialComponent = static_cast<MaterialComponent*>(selectedObject->GetComponent(ComponentType::MATERIAL));
+                    if (materialComponent) {
+                        ImGui::Checkbox("Checkers Texture", &materialComponent->checkersTexture);
+                        if (materialComponent->checkersTexture != materialComponent->changeToCheckers) {
                             for (const auto& texture : materialComponent->m_Textures) {
                                 if (texture == NULL) continue;
-                                ImGui::Text("");
-                                ImGui::Text("Texture path: %s", texture->m_fileName.c_str());
-                                ImGui::Text("Texture size: %i", texture->byteSize, " bytes");
+                                if (materialComponent->checkersTexture)
+                                {
+                                    App::GetInstance().textureLoader->LoadCheckers(texture);
+                                }
+                                else {
+                                    App::GetInstance().textureLoader->ReturnFromCheckers(texture);
+                                }
                             }
+                            materialComponent->changeToCheckers = materialComponent->checkersTexture;
                         }
-                        else {
-                            ImGui::Text("No material");
+                        for (const auto& texture : materialComponent->m_Textures) {
+                            if (texture == NULL) continue;
+                            ImGui::Text("");
+                            ImGui::Text("Texture path: %s", texture->m_fileName.c_str());
+                            ImGui::Text("Texture size: %i", texture->byteSize, " bytes");
                         }
                     }
+                    else {
+                        ImGui::Text("No material");
+                    }
+                }
 
-                }
-                else {
-                    ImGui::Text("No object selected.");
-                }
             }
-            ImGui::End();
-        };
+            else {
+                ImGui::Text("No object selected.");
+            }
+        }
+        ImGui::End();
+    }
     // Dark block for brightness
     float opacity = 1.0f - brightness;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -610,7 +626,7 @@ void Editor::ProcessDropFile(const std::string fileFullPath) {
         transformComponent->position = { 0,0,0 };
         materialComponent->m_Textures = App::GetInstance().textureLoader->InitMaterials(fileFullPath, materialComponent->hasTexture);
         if (!materialComponent->hasTexture) {
-            App::GetInstance().textureLoader->ChangeTexture(materialComponent->m_Textures, 0, "Data/PrimitiveTextures/checkerboard.dds", materialComponent->hasTexture);
+            App::GetInstance().textureLoader->ChangeTexture(materialComponent->m_Textures, 0, App::GetInstance().textureLoader->GetCheckersPath(), materialComponent->hasTexture);
         }
         App::GetInstance().scene->AddGameObject(std::move(newGameObject));
     }

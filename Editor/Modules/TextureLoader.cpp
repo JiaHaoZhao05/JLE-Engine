@@ -91,13 +91,45 @@ std::vector<Texture*> TextureLoader::InitMaterials(const std::string& filename, 
 
 bool TextureLoader::LoadFromFile(Texture* tex,const std::string& fileName, bool& hasTexture) {
 	tex->m_fileName = fileName;
+	hasTexture = LoadTexture(tex, fileName);
+	return hasTexture;
+}
 
+bool TextureLoader::ChangeTexture(std::vector<Texture*>& m_Tex, unsigned int materialIndex, const std::string& fileName, bool& hasTexture) {
+	if (materialIndex >= m_Tex.size()) {
+		m_Tex.resize(materialIndex + 1, nullptr);
+	}
+
+	if (m_Tex[materialIndex] == nullptr) {
+		m_Tex[materialIndex] = new Texture(fileName);
+	}
+	// change material
+	if (!LoadFromFile(m_Tex[materialIndex], fileName, hasTexture)) {
+		LOG("TextureLoader -> ChangeTexture(): Error loading texture: " + fileName);
+		delete m_Tex[materialIndex];
+		m_Tex[materialIndex] = nullptr;
+		hasTexture = false;
+		return false;
+	}
+
+	return true;
+}
+
+bool TextureLoader::LoadCheckers(Texture* tex) {
+	return LoadTexture(tex, checkersPath);
+}
+
+bool TextureLoader::ReturnFromCheckers(Texture* tex) {
+	return LoadTexture(tex, tex->m_fileName);
+}
+
+bool TextureLoader::LoadTexture(Texture* tex, const std::string& fileName) {
 	ILuint imageID = 0;
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
 
-	if (!ilLoadImage(tex->m_fileName.c_str())) {
-		LOG("Failed to load Texture:" + tex->m_fileName);
+	if (!ilLoadImage(fileName.c_str())) {
+		LOG("Failed to load Texture:" + fileName);
 		ilDeleteImages(1, &imageID);
 		return false;
 	}
@@ -129,26 +161,5 @@ bool TextureLoader::LoadFromFile(Texture* tex,const std::string& fileName, bool&
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	hasTexture = (tex->m_textureObj != 0);
-	return hasTexture;
-}
-
-bool TextureLoader::ChangeTexture(std::vector<Texture*>& m_Tex, unsigned int materialIndex, const std::string& fileName, bool& hasTexture) {
-	if (materialIndex >= m_Tex.size()) {
-		m_Tex.resize(materialIndex + 1, nullptr);
-	}
-
-	if (m_Tex[materialIndex] == nullptr) {
-		m_Tex[materialIndex] = new Texture(fileName);
-	}
-	// change material
-	if (!LoadFromFile(m_Tex[materialIndex], fileName, hasTexture)) {
-		LOG("TextureLoader -> ChangeTexture(): Error loading texture: " + fileName);
-		delete m_Tex[materialIndex];
-		m_Tex[materialIndex] = nullptr;
-		hasTexture = false;
-		return false;
-	}
-
-	return true;
+	return (tex->m_textureObj != 0);
 }

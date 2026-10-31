@@ -20,6 +20,7 @@ struct EditorSettings {
 	bool showScene;
 	bool showInspector;
 	bool showConsole;
+	bool showHierarchy;
 
 	EditorSettings() {
 		showAbout = false;
@@ -27,14 +28,16 @@ struct EditorSettings {
 		showScene = true;
 		showInspector = true;
 		showConsole = true;
+		showHierarchy = true;
 	}
 
-	EditorSettings(const bool& showAbout, const bool& showConfig, const bool& showScene, const bool& showInspector, const bool& showConsole) {
+	EditorSettings(const bool& showAbout, const bool& showConfig, const bool& showScene, const bool& showInspector, const bool& showConsole, const bool& showHierarchy) {
 		this->showAbout = showAbout;
 		this->showConfig = showConfig;
 		this->showScene = showScene;
 		this->showInspector = showInspector;
 		this->showConsole = showConsole;
+		this->showHierarchy = showHierarchy;
 	}
 };
 

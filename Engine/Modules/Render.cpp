@@ -136,7 +136,7 @@ bool Render::Update() {
     glm::mat4 modelViewProj = projectionMatrix * viewMatrix * modelMatrix;
     
     // Clear screen color
-    glClearColor(0.1f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
     // Clear Color Buffer and Depth Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,7 +162,7 @@ bool Render::Update() {
     glEnable(GL_STENCIL_TEST);
 
     // Clear screen color from render to texture
-    glClearColor(0.0f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     // Clear Color Buffer and Depth Buffer from render to texture
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
