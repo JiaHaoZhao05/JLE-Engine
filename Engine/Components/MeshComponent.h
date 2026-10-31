@@ -22,9 +22,9 @@ public:
 
 	GLsizei n_index = 0;
 
-	bool showVertex = false;
+	bool showVertexNormals = false;
 	bool showTriangles = false;
-	bool showFace = false;
+	bool showFaceNormals = false;
 	bool showCheckers = false;
 
 	//Loading Meshes and textures

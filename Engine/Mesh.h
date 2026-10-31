@@ -6,6 +6,9 @@
 #include <glad/glad.h>
 #include <SDL3/SDL.h>
 
+//GLM
+#include "glm/glm.hpp"
+
 #define INVALID_MATERIAL 0xFFFFFFFF
 
 struct Vector3f {
@@ -44,6 +47,20 @@ struct MeshEntry {
 	unsigned int baseIndex;
 	unsigned int materialIndex;
 };
+#define FACE_NORMAL_LENGTH 1
+
+struct FaceNormal {
+	glm::vec3 normal;
+	glm::vec3 position;
+	float length;
+
+	FaceNormal(const glm::vec3& normal, const glm::vec3& position, const float& length) {
+		this->normal = normal;
+		this->position = position;
+		this->length = length;
+	}
+};
+
 class Mesh {
 public:
 	Mesh() {};
@@ -73,8 +90,24 @@ public:
 
 	std::vector<MeshEntry> m_Meshes;
 
-	std::vector<Vector3f> m_Positions;
-	std::vector<Vector3f> m_Normals;
-	std::vector<Vector2f> m_TextCoords;
+	std::vector<glm::vec3> m_Positions; //vertex positions
+	std::vector<Vector2f> m_TextCoords; //UVs 
 	std::vector<unsigned int> m_Indices;
+
+
+	//triangle normals
+	std::vector<FaceNormal> m_triangleNormals;
+
+	GLuint m_FaceNormalsVAO = 0;
+	GLuint m_FaceNormalsVBO = 0;
+
+	void PopulateFaceNormalsBuffers();
+
+	//vertex normals
+	std::vector<glm::vec3> m_vertexNormals; //vertex normals loaded with Assimp
+
+	GLuint m_VertexNormalsVAO = 0;
+	GLuint m_VertexNormalsVBO = 0;
+
+	void PopulateVertexNormalBuffers();
 };

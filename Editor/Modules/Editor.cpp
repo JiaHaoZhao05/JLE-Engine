@@ -135,7 +135,7 @@ bool Editor::PostUpdate() {
     {
         flags |= ImGuiWindowFlags_NoMove;
     }
-    if (showScene) {
+    if (editorSettings.showScene) {
         
         ImGui::Begin("Scene", nullptr, flags);
         AddWindow("Scene");
@@ -153,8 +153,7 @@ bool Editor::PostUpdate() {
         ImGui::End();
     }
 
-    if (editorSettings.ImGuiActive) {
-        if (showConsole) {
+        if (editorSettings.showConsole) {
             App::GetInstance().log.DrawConsole();
         }
 
@@ -171,16 +170,20 @@ bool Editor::PostUpdate() {
             }
             if (ImGui::BeginMenu("View")) {
                 if (ImGui::MenuItem("Configuraton Window")) {
-                    showConfig = !showConfig;
+                    editorSettings.showConfig = !editorSettings.showConfig;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Scene")) {
-                    showScene = !showScene;
+                    editorSettings.showScene = !editorSettings.showScene;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Inspector")) {
-                    showInspector = !showInspector;
+                    editorSettings.showInspector = !editorSettings.showInspector;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Console")) {
-                    showConsole = !showConsole;
+                    editorSettings.showConsole = !editorSettings.showConsole;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 ImGui::EndMenu();
             }
@@ -195,7 +198,8 @@ bool Editor::PostUpdate() {
                     SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
                 }
                 if (ImGui::MenuItem("About")) {
-                    showAbout = !showAbout;
+                    editorSettings.showAbout = !editorSettings.showAbout;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 ImGui::EndMenu();
             }
@@ -203,9 +207,9 @@ bool Editor::PostUpdate() {
         }
 
         //about us window with license and credits
-        if (showAbout)
+        if (editorSettings.showAbout)
         {
-            ImGui::Begin("About", &showAbout);
+            ImGui::Begin("About", &editorSettings.showAbout);
             AddWindow("About");
 
             ImGui::Text("JLE Engine v0.1");
@@ -245,7 +249,7 @@ bool Editor::PostUpdate() {
         }
 
         //Configuration window
-        if (showConfig) {
+        if (editorSettings.showConfig) {
             ImGui::Begin("Configuration window", nullptr, flags);
             AddWindow("Configuration window");
             if (ImGui::CollapsingHeader("Application"))
@@ -265,26 +269,34 @@ bool Editor::PostUpdate() {
             }
             if (ImGui::CollapsingHeader("Window"))
             {
+                RenderSettings renderSettings = FileReader::GetRenderSettings();
+
                 ImGui::SliderFloat("Brightness", &brightness, 0.1, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
 
                 static int currentSize = 1;
                 if (ImGui::Combo("Window sizes", &currentSize, windowSizes, GLM_COUNTOF(windowSizes))) {
                     SDL_SetWindowSize(window, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
                     glViewport(0, 0, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
+                    renderSettings.windowsSizeX = windowSizesValues[currentSize].x;
+                    renderSettings.windowsSizeY = windowSizesValues[currentSize].y;
+                    FileReader::SetRenderSettings(renderSettings);
                 }
 
                 ImGui::Text("Refresh rate: %i", (int)App::GetInstance().fps);
 
-                if (ImGui::Checkbox("Fullscreen", &fullscreen)) {
-                    SDL_SetWindowFullscreen(window, fullscreen);
+                if (ImGui::Checkbox("Fullscreen", &windowSettings.fullScreen)) {
+                    SDL_SetWindowFullscreen(window, windowSettings.fullScreen);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
 
-                if (ImGui::Checkbox("Resizable", &resizable)) {
-                    SDL_SetWindowResizable(window, resizable);
+                if (ImGui::Checkbox("Resizable", &windowSettings.resizable)) {
+                    SDL_SetWindowResizable(window, windowSettings.resizable);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
 
-                if (ImGui::Checkbox("Borderless", &borderless)) {
-                    SDL_SetWindowBordered(window, !borderless);
+                if (ImGui::Checkbox("Borderless", &windowSettings.borderless)) {
+                    SDL_SetWindowBordered(window, !windowSettings.borderless);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
             }
             if (ImGui::CollapsingHeader("Hardware")) {
@@ -377,7 +389,7 @@ bool Editor::PostUpdate() {
         }
 
 		//Inspector window
-        if (showInspector) {
+        if (editorSettings.showInspector) {
             if (ImGui::Begin("Inspector")) {
 
                 //need the scene to get the currently selected gameobject
@@ -413,7 +425,7 @@ bool Editor::PostUpdate() {
                     ImGui::Text("Z: %f", transform->scale.z);
                     ImGui::Text("");
                     if (ImGui::Button("RESET TO DEFAULT")) {
-						transform->position = glm::vec3(0.0f);
+                        transform->position = glm::vec3(0.0f);
                         transform->rotation = glm::vec3(0.0f);
                         transform->scale = glm::vec3(1.0f);
                     }
@@ -425,20 +437,28 @@ bool Editor::PostUpdate() {
                             Mesh& mesh = meshComponent->mesh;
 
                             ImGui::Text("Vertices: %i", mesh.m_Positions.size());
-                            ImGui::Text("Normals: %i", mesh.m_Normals.size());
+                            ImGui::Text("Normals: %i", mesh.m_vertexNormals.size());
                             ImGui::Text("Indices: %i", mesh.m_Indices.size());
                             ImGui::Text("Submeshes: %i", mesh.m_Meshes.size());
                             //ImGui::Text("Textures: %i", mesh.m_Textures.size());
 
                             ImGui::Text("");
 
-                            ImGui::Checkbox("Show Vertex", &meshComponent->showVertex);
-                            ImGui::Checkbox("Show Triangle", &meshComponent->showTriangles);
-                            ImGui::Checkbox("Show Face", &meshComponent->showFace);
-                            ImGui::Checkbox("Show Chechers", &meshComponent->showCheckers);
+                            ImGui::Checkbox("Show Vertex Normals", &meshComponent->showVertexNormals);
+                            ImGui::Checkbox("Show Face Normals", &meshComponent->showFaceNormals);
                         }
                         else {
                             ImGui::Text("No mesh");
+                        }
+                    }
+
+                    if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        auto* materialComponent = static_cast<MeshComponent*>(selectedObject->GetComponent(ComponentType::MESH));
+                        if (materialComponent) {
+
+                        }
+                        else {
+                            ImGui::Text("No material");
                         }
                     }
 
@@ -448,8 +468,7 @@ bool Editor::PostUpdate() {
                 }
             }
             ImGui::End();
-        }
-    }
+        };
     // Dark block for brightness
     float opacity = 1.0f - brightness;
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -537,8 +556,6 @@ std::string Editor::GetCapsFromCpu(const cpu_features::X86Features& features) {
 void Editor::ShowGameObjectHierarchy(GameObject* gameObject)
 {
     ImGui::PushID(gameObject);
-
-    App::GetInstance().scene->SetSelectedGameObject(gameObject);
 
     App::GetInstance().camera->orbitCentre = static_cast<TransformComponent*>(gameObject->GetComponent(ComponentType::TRANSFORM))->position;
 

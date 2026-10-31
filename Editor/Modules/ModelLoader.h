@@ -1,6 +1,7 @@
 #pragma once
 #include "../../Engine/Module.h"
 #include "../../Engine/Mesh.h"
+#include "glm/glm.hpp"
 class Mesh;
 /// <summary>
 /// Also known as Assimp loader
@@ -15,6 +16,8 @@ public:
 
 	Mesh LoadPrimitive(const std::vector<float>& vertices, const std::vector<int>& indices);
 
+	void LoadFaceNormals(Mesh& mesh);
+
 private:
 	bool InitFromScene(Mesh& mesh, const aiScene* pScene, const std::string& filename);
 
@@ -27,4 +30,8 @@ private:
 	void InitSingleMesh(Mesh& mesh, const aiMesh* paiMesh);
 
 	void PopulateBuffers(Mesh& mesh);
+
+private:
+	//FaceNormal
+	FaceNormal GetNormal(const glm::vec3& A, const glm::vec3 B, const glm::vec3 C);
 };

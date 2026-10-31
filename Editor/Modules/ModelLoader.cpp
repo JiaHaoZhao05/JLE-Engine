@@ -52,6 +52,11 @@ Mesh ModelLoader::LoadMesh(const std::string& filename) {
 	}
 	glBindVertexArray(0);
 
+	//triangle/face normals
+	LoadFaceNormals(newMesh);
+	newMesh.PopulateFaceNormalsBuffers();
+	newMesh.PopulateVertexNormalBuffers();
+
 	return newMesh;
 }
 Mesh ModelLoader::LoadPrimitive(const std::vector<float>& vertices, const std::vector<int>& indices) {
@@ -86,6 +91,12 @@ Mesh ModelLoader::LoadPrimitive(const std::vector<float>& vertices, const std::v
 	entry.baseIndex = 0;
 	entry.materialIndex = 0;
 	newMesh.m_Meshes.assign(1, entry);
+
+	//primitive vertices <-> mesh positions
+	for (size_t i = 0; i + 7 < vertices.size(); i += 8) {
+		newMesh.m_Positions.emplace_back(vertices[i], vertices[i + 1], vertices[i + 2]);
+	}
+
 	return newMesh;
 }
 bool ModelLoader::InitFromScene(Mesh& mesh, const aiScene* pScene, const std::string& filename) {
@@ -119,7 +130,7 @@ void ModelLoader::CountVerticesAndIndices(Mesh& mesh, const aiScene* pScene, uns
 
 void ModelLoader::ReserveSpace(Mesh& mesh, unsigned int numVertices, unsigned int numIndices) {
 	mesh.m_Positions.reserve(numVertices);
-	mesh.m_Normals.reserve(numVertices);
+	mesh.m_vertexNormals.reserve(numVertices);
 	mesh.m_TextCoords.reserve(numVertices);
 	mesh.m_Indices.reserve(numIndices);
 }
@@ -140,8 +151,8 @@ void ModelLoader::InitSingleMesh(Mesh& mesh, const aiMesh* paiMesh) {
 		const aiVector3D& pNormal = paiMesh->mNormals[i];
 		const aiVector3D& pTextCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
 
-		mesh.m_Positions.push_back(Vector3f(pPos.x, pPos.y, pPos.z));
-		mesh.m_Normals.push_back(Vector3f(pNormal.x, pNormal.y, pNormal.z));
+		mesh.m_Positions.push_back({ pPos.x, pPos.y, pPos.z });
+		mesh.m_vertexNormals.push_back({ pNormal.x, pNormal.y, pNormal.z });
 		mesh.m_TextCoords.push_back(Vector2f(pTextCoord.x, pTextCoord.y));
 	}
 
@@ -173,4 +184,47 @@ void ModelLoader::PopulateBuffers(Mesh& mesh) {
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.m_buffers[mesh.Buffer_Type::INDEX_BUFFER]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh.m_Indices[0]) * mesh.m_Indices.size(), mesh.m_Indices.data(), GL_STATIC_DRAW);
+}
+
+
+FaceNormal ModelLoader::GetNormal(const glm::vec3& A, const glm::vec3 B, const glm::vec3 C) { //TODO: move the FaceNormal code to mesh and load the FaceNormal vector after creating the mesh
+	//calculate normal
+	glm::vec3 vector1 = B - A;
+	glm::vec3 vector2 = C - A;
+
+	glm::vec3 normal = glm::cross(vector1, vector2);
+	normal = glm::normalize(normal);
+
+	//calculate incenter
+	float a = glm::distance(B, C);
+	float b = glm::distance(A, C);
+	float c = glm::distance(A, B);
+
+	if (a + b + c == 0.0f) return FaceNormal({ 0,0,0 }, { 0,0,0 }, 1);
+
+	glm::vec3 position = (a * A + b * B + c * C) / (a + b + c);
+
+	return FaceNormal(normal, position, 1);
+}
+
+void ModelLoader::LoadFaceNormals(Mesh& mesh)
+{
+	mesh.m_triangleNormals.clear();
+
+	const auto& vertices = mesh.m_Positions;
+	for (const MeshEntry& meshEntry : mesh.m_Meshes) {
+		for (size_t i = 0; i + 2 < meshEntry.numIndices; i += 3) {
+			unsigned int index = meshEntry.baseIndex + i;
+
+			unsigned int i1 = meshEntry.baseVertex + mesh.m_Indices[index];
+			unsigned int i2 = meshEntry.baseVertex + mesh.m_Indices[index + 1];
+			unsigned int i3 = meshEntry.baseVertex + mesh.m_Indices[index + 2];
+
+			if (i1 >= vertices.size() || i2 >= vertices.size() || i3 >= vertices.size()) {
+				continue;
+			}
+
+			mesh.m_triangleNormals.emplace_back(GetNormal(vertices[i1], vertices[i2], vertices[i3]));
+		}
+	}
 }
