@@ -1,6 +1,6 @@
 # JLE ENGINE
 
-Made by Jia Hao Zhao, Luying Bao Cheng and Erik Argemí Chinchilla.
+Made by \[Jia Hao Zhao](https://github.com/JiaHaoZhao05), \[Luying Bao Cheng](https://github.com/Luigi-box) and \[Erik Argemí Chinchilla](https://github.com/ErikArgemi).
 
 
 
