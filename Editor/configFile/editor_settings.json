@@ -1,3 +1,7 @@
 {
-  "isImGuiActive" : true
+    "showAbout": false,
+    "showConfig": true,
+    "showConsole": true,
+    "showInspector": true,
+    "showScene": true
 }

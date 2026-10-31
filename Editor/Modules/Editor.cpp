@@ -135,7 +135,7 @@ bool Editor::PostUpdate() {
     {
         flags |= ImGuiWindowFlags_NoMove;
     }
-    if (showScene) {
+    if (editorSettings.showScene) {
         
         ImGui::Begin("Scene", nullptr, flags);
         AddWindow("Scene");
@@ -153,8 +153,7 @@ bool Editor::PostUpdate() {
         ImGui::End();
     }
 
-    if (editorSettings.ImGuiActive) {
-        if (showConsole) {
+        if (editorSettings.showConsole) {
             App::GetInstance().log.DrawConsole();
         }
 
@@ -171,16 +170,20 @@ bool Editor::PostUpdate() {
             }
             if (ImGui::BeginMenu("View")) {
                 if (ImGui::MenuItem("Configuraton Window")) {
-                    showConfig = !showConfig;
+                    editorSettings.showConfig = !editorSettings.showConfig;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Scene")) {
-                    showScene = !showScene;
+                    editorSettings.showScene = !editorSettings.showScene;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Inspector")) {
-                    showInspector = !showInspector;
+                    editorSettings.showInspector = !editorSettings.showInspector;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 if (ImGui::MenuItem("Console")) {
-                    showConsole = !showConsole;
+                    editorSettings.showConsole = !editorSettings.showConsole;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 ImGui::EndMenu();
             }
@@ -195,7 +198,8 @@ bool Editor::PostUpdate() {
                     SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
                 }
                 if (ImGui::MenuItem("About")) {
-                    showAbout = !showAbout;
+                    editorSettings.showAbout = !editorSettings.showAbout;
+                    FileReader::SetEditorSettings(editorSettings);
                 }
                 ImGui::EndMenu();
             }
@@ -203,22 +207,22 @@ bool Editor::PostUpdate() {
         }
 
         //about us window with license and credits
-        if (showAbout)
+        if (editorSettings.showAbout)
         {
-            ImGui::Begin("About", &showAbout);
+            ImGui::Begin("About", &editorSettings.showAbout);
             AddWindow("About");
 
             ImGui::Text("JLE Engine v0.1");
             ImGui::Text("Welcome to the glorious JLE Engine, JLE stands for Jia, Luying and Erik.");
             ImGui::Text("By Group 1: Jia Hao Zhao Deng, Luying Bao Cheng and Erik Argemí Chinchilla");
             ImGui::TextUnformatted(R"(3rd Party Libraries Used:
-            - SDL
-            - glm
-            - sdl3
-            - opengl
-            - glad
-            - imgui
-            - imguizmo
+            - glm 3.5.1
+            - sdl3 3.5.1
+            - opengl 3.5.1
+            - imgui 1.93.0
+            - imguizmo 2.2.9
+            - assimp 6.0.5
+            - DevIL 1.8.0
             )");
             ImGui::TextUnformatted(R"(MIT License
 
@@ -245,7 +249,7 @@ bool Editor::PostUpdate() {
         }
 
         //Configuration window
-        if (showConfig) {
+        if (editorSettings.showConfig) {
             ImGui::Begin("Configuration window", nullptr, flags);
             AddWindow("Configuration window");
             if (ImGui::CollapsingHeader("Application"))
@@ -265,26 +269,34 @@ bool Editor::PostUpdate() {
             }
             if (ImGui::CollapsingHeader("Window"))
             {
+                RenderSettings renderSettings = FileReader::GetRenderSettings();
+
                 ImGui::SliderFloat("Brightness", &brightness, 0.1, 1.0, ImGuiSliderFlags(ImGuiSliderFlags_None));
 
                 static int currentSize = 1;
                 if (ImGui::Combo("Window sizes", &currentSize, windowSizes, GLM_COUNTOF(windowSizes))) {
                     SDL_SetWindowSize(window, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
                     glViewport(0, 0, windowSizesValues[currentSize].x, windowSizesValues[currentSize].y);
+                    renderSettings.windowsSizeX = windowSizesValues[currentSize].x;
+                    renderSettings.windowsSizeY = windowSizesValues[currentSize].y;
+                    FileReader::SetRenderSettings(renderSettings);
                 }
 
                 ImGui::Text("Refresh rate: %i", (int)App::GetInstance().fps);
 
-                if (ImGui::Checkbox("Fullscreen", &fullscreen)) {
-                    SDL_SetWindowFullscreen(window, fullscreen);
+                if (ImGui::Checkbox("Fullscreen", &windowSettings.fullScreen)) {
+                    SDL_SetWindowFullscreen(window, windowSettings.fullScreen);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
 
-                if (ImGui::Checkbox("Resizable", &resizable)) {
-                    SDL_SetWindowResizable(window, resizable);
+                if (ImGui::Checkbox("Resizable", &windowSettings.resizable)) {
+                    SDL_SetWindowResizable(window, windowSettings.resizable);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
 
-                if (ImGui::Checkbox("Borderless", &borderless)) {
-                    SDL_SetWindowBordered(window, !borderless);
+                if (ImGui::Checkbox("Borderless", &windowSettings.borderless)) {
+                    SDL_SetWindowBordered(window, !windowSettings.borderless);
+                    FileReader::SetWindowSettings(windowSettings);
                 }
             }
             if (ImGui::CollapsingHeader("Hardware")) {
@@ -361,11 +373,23 @@ bool Editor::PostUpdate() {
             if (ImGui::CollapsingHeader("Hierarchy")) {
                 ShowGameObjectHierarchy(App::GetInstance().scene->GetRootGameObject());
             }
+            if (ImGui::CollapsingHeader("Libraries Used"))
+            {
+                ImGui::TextUnformatted(R"(3rd Party Libraries Used:
+    - glm 3.5.1
+    - sdl3 3.5.1
+    - opengl 3.5.1
+    - imgui 1.93.0
+    - imguizmo 2.2.9
+    - assimp 6.0.5
+    - DevIL 1.8.0
+            )");
+            }
             ImGui::End();
         }
 
 		//Inspector window
-        if (showInspector) {
+        if (editorSettings.showInspector) {
             if (ImGui::Begin("Inspector")) {
 
                 //need the scene to get the currently selected gameobject
@@ -401,7 +425,7 @@ bool Editor::PostUpdate() {
                     ImGui::Text("Z: %f", transform->scale.z);
                     ImGui::Text("");
                     if (ImGui::Button("RESET TO DEFAULT")) {
-						transform->position = glm::vec3(0.0f);
+                        transform->position = glm::vec3(0.0f);
                         transform->rotation = glm::vec3(0.0f);
                         transform->scale = glm::vec3(1.0f);
                     }
@@ -444,8 +468,7 @@ bool Editor::PostUpdate() {
                 }
             }
             ImGui::End();
-        }
-    }
+        };
     // Dark block for brightness
     float opacity = 1.0f - brightness;
     ImGuiViewport* viewport = ImGui::GetMainViewport();

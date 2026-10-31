@@ -88,17 +88,8 @@ private:
         "3840x2160"
     };
 
-    //Windows flags
-    bool fullscreen = false;
-    bool resizable = false;
-    bool borderless = false;
-
-    //View Show Windows
-    bool showAbout = false;
-    bool showConfig = true;
-    bool showScene = true;
-    bool showInspector = true;
-    bool showConsole = true;
+    //Windows settings
+    WindowSettings windowSettings;
 
     float brightness = 1.0f;
 

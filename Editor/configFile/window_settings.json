@@ -1,3 +1,5 @@
 {
-  "fullScreen": true
+    "borderless": true,
+    "fullScreen": true,
+    "resizable": true
 }
