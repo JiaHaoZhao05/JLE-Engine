@@ -84,6 +84,39 @@ bool Scene::Start() {
 	transformComponent->position = { 0,0,0 };
 	materialComponent->m_Textures = App::GetInstance().textureLoader->InitMaterials("Data/BakerHouse.fbx", materialComponent->hasTexture);
 
+	auto newGameObject = std::make_unique<GameObject>();
+	newGameObject->name = "Lash";
+	newGameObject->CreateComponents({ ComponentType::MESH, ComponentType::TRANSFORM, ComponentType::MATERIAL });
+
+	auto* meshComponent1 = static_cast<MeshComponent*>(newGameObject->GetComponent(ComponentType::MESH));
+	auto* transformComponent1 = static_cast<TransformComponent*>(newGameObject->GetComponent(ComponentType::TRANSFORM));
+	auto* materialComponent1 = static_cast<MaterialComponent*>(newGameObject->GetComponent(ComponentType::MATERIAL));
+
+	meshComponent1->mesh = App::GetInstance().modelLoader->LoadMesh("Data/lash.fbx");
+	meshComponent1->SetData(*meshComponent1);
+	transformComponent1->position = { -10,0,0 };
+	materialComponent1->m_Textures = App::GetInstance().textureLoader->InitMaterials("Data/lash.fbx", materialComponent1->hasTexture);
+	if (!materialComponent1->hasTexture) {
+		App::GetInstance().textureLoader->ChangeTexture(materialComponent1->m_Textures, 0, App::GetInstance().textureLoader->GetCheckersPath(), materialComponent1->hasTexture);
+	}
+	App::GetInstance().scene->AddGameObject(std::move(newGameObject));
+
+	auto newGameObject2 = std::make_unique<GameObject>();
+	newGameObject2->name = "Lash";
+	newGameObject2->CreateComponents({ ComponentType::MESH, ComponentType::TRANSFORM, ComponentType::MATERIAL });
+
+	auto* meshComponent2 = static_cast<MeshComponent*>(newGameObject2->GetComponent(ComponentType::MESH));
+	auto* transformComponent2 = static_cast<TransformComponent*>(newGameObject2->GetComponent(ComponentType::TRANSFORM));
+	auto* materialComponent2 = static_cast<MaterialComponent*>(newGameObject2->GetComponent(ComponentType::MATERIAL));
+
+	meshComponent2->mesh = App::GetInstance().modelLoader->LoadMesh("Data/Sr.China.fbx");
+	meshComponent2->SetData(*meshComponent2);
+	transformComponent2->position = { 10,0,0 };
+	materialComponent2->m_Textures = App::GetInstance().textureLoader->InitMaterials("Data/Sr.China.fbx", materialComponent2->hasTexture);
+	if (!materialComponent2->hasTexture) {
+		App::GetInstance().textureLoader->ChangeTexture(materialComponent2->m_Textures, 0, App::GetInstance().textureLoader->GetCheckersPath(), materialComponent2->hasTexture);
+	}
+	App::GetInstance().scene->AddGameObject(std::move(newGameObject2));
 	return true;
 }
 
