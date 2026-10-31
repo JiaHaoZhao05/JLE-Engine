@@ -456,6 +456,7 @@ bool Editor::PostUpdate() {
                         auto* materialComponent = static_cast<MaterialComponent*>(selectedObject->GetComponent(ComponentType::MATERIAL));
                         if (materialComponent) {
                             for (const auto& texture : materialComponent->m_Textures) {
+                                if (texture == NULL) continue;
                                 ImGui::Text("");
                                 ImGui::Text("Texture path: %s", texture->m_fileName.c_str());
                                 ImGui::Text("Texture size: %i", texture->byteSize, " bytes");
