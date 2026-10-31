@@ -67,7 +67,12 @@ std::vector<Texture*> TextureLoader::InitMaterials(const std::string& filename, 
 					dirTextPath = fileDir / dirTextPath; 
 				}
 				//Load texture
-				if (i >= newTextures.size()) newTextures.push_back(new Texture(dirTextPath.string().c_str()));
+				if (i >= newTextures.size()) {
+					newTextures.resize(i + 1, nullptr);
+				}
+				if (newTextures[i] == nullptr) {
+					newTextures[i] = new Texture(dirTextPath.string().c_str());
+				}
 				if (!LoadFromFile(newTextures[i],newTextures[i]->m_fileName, hasTexture)) {
 					std::cerr << "Error loading texture: " << dirTextPath.string() << std::endl;
 					delete newTextures[i];
