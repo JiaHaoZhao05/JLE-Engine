@@ -54,7 +54,8 @@ Mesh ModelLoader::LoadMesh(const std::string& filename) {
 
 	//triangle/face normals
 	LoadFaceNormals(newMesh);
-	newMesh.PopulateNormalsBuffers();
+	newMesh.PopulateFaceNormalsBuffers();
+	newMesh.PopulateVertexNormalBuffers();
 
 	return newMesh;
 }
@@ -129,7 +130,7 @@ void ModelLoader::CountVerticesAndIndices(Mesh& mesh, const aiScene* pScene, uns
 
 void ModelLoader::ReserveSpace(Mesh& mesh, unsigned int numVertices, unsigned int numIndices) {
 	mesh.m_Positions.reserve(numVertices);
-	mesh.m_Normals.reserve(numVertices);
+	mesh.m_vertexNormals.reserve(numVertices);
 	mesh.m_TextCoords.reserve(numVertices);
 	mesh.m_Indices.reserve(numIndices);
 }
@@ -151,7 +152,7 @@ void ModelLoader::InitSingleMesh(Mesh& mesh, const aiMesh* paiMesh) {
 		const aiVector3D& pTextCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
 
 		mesh.m_Positions.push_back({ pPos.x, pPos.y, pPos.z });
-		mesh.m_Normals.push_back({ pNormal.x, pNormal.y, pNormal.z });
+		mesh.m_vertexNormals.push_back({ pNormal.x, pNormal.y, pNormal.z });
 		mesh.m_TextCoords.push_back(Vector2f(pTextCoord.x, pTextCoord.y));
 	}
 

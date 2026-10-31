@@ -20,8 +20,10 @@ public:
 	void Update();
 	
 	void Render();
+
 	void RenderWireframe();
 	void RenderNormalsPerTriangle();
+	void RenderVertexNormals();
 
 public:
 	Component* GetComponent(ComponentType type);

@@ -270,8 +270,11 @@ bool Render::Update() {
         glBindTexture(GL_TEXTURE_2D, material->id);*/
 
         gameObject->Render();
-        if (meshComponent->showFace) {
+        if (meshComponent->showFaceNormals) {
             gameObject->RenderNormalsPerTriangle();
+        }
+        if (meshComponent->showVertexNormals) {
+            gameObject->RenderVertexNormals();
         }
         /*glBindVertexArray(meshComponent->mesh.m_VAO);
         glDrawElements(GL_TRIANGLES, meshComponent->n_index, GL_UNSIGNED_INT, 0);*/

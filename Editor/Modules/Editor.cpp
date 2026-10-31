@@ -413,20 +413,28 @@ bool Editor::PostUpdate() {
                             Mesh& mesh = meshComponent->mesh;
 
                             ImGui::Text("Vertices: %i", mesh.m_Positions.size());
-                            ImGui::Text("Normals: %i", mesh.m_Normals.size());
+                            ImGui::Text("Normals: %i", mesh.m_vertexNormals.size());
                             ImGui::Text("Indices: %i", mesh.m_Indices.size());
                             ImGui::Text("Submeshes: %i", mesh.m_Meshes.size());
                             //ImGui::Text("Textures: %i", mesh.m_Textures.size());
 
                             ImGui::Text("");
 
-                            ImGui::Checkbox("Show Vertex Normals", &meshComponent->showVertex);
-                            ImGui::Checkbox("Show Triangle", &meshComponent->showTriangles);
-                            ImGui::Checkbox("Show Face Normals", &meshComponent->showFace);
-                            ImGui::Checkbox("Show Chechers", &meshComponent->showCheckers);
+                            ImGui::Checkbox("Show Vertex Normals", &meshComponent->showVertexNormals);
+                            ImGui::Checkbox("Show Face Normals", &meshComponent->showFaceNormals);
                         }
                         else {
                             ImGui::Text("No mesh");
+                        }
+                    }
+
+                    if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        auto* materialComponent = static_cast<MeshComponent*>(selectedObject->GetComponent(ComponentType::MESH));
+                        if (materialComponent) {
+
+                        }
+                        else {
+                            ImGui::Text("No material");
                         }
                     }
 

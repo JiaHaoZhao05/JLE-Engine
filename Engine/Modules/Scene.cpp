@@ -60,7 +60,7 @@ std::unique_ptr<GameObject> Scene::CreatePrimitive(Primitive& primitive, glm::ve
 
 	App::GetInstance().modelLoader->LoadFaceNormals(meshComponent->mesh);
 	
-	meshComponent->mesh.PopulateNormalsBuffers();
+	meshComponent->mesh.PopulateFaceNormalsBuffers();
 	
 	return newGameObject;
 }

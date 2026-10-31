@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Mesh.h"
 #include <iostream>
 
 #include <assimp/Importer.hpp>
@@ -37,7 +38,7 @@ void Mesh::Clear() {
 	}
 }
 
-void Mesh::PopulateNormalsBuffers() {
+void Mesh::PopulateFaceNormalsBuffers() {
 	if (m_triangleNormals.empty()) return;
 
 	std::vector<glm::vec3> vertices;
@@ -46,13 +47,40 @@ void Mesh::PopulateNormalsBuffers() {
 		vertices.emplace_back(triangleNormal.position + triangleNormal.normal * triangleNormal.length);
 	}
 
-	if (m_NormalsVAO == 0) {
-		glGenVertexArrays(1, &m_NormalsVAO);
-		glGenBuffers(1, &m_NormalsVBO);
+	if (m_FaceNormalsVAO == 0) {
+		glGenVertexArrays(1, &m_FaceNormalsVAO);
+		glGenBuffers(1, &m_FaceNormalsVBO);
 	}
 
-	glBindVertexArray(m_NormalsVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_NormalsVBO);
+	glBindVertexArray(m_FaceNormalsVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_FaceNormalsVBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+
+	glBindVertexArray(0);
+}
+
+void Mesh::PopulateVertexNormalBuffers()
+{
+	if (m_vertexNormals.empty()) return;
+
+	std::vector<glm::vec3> vertices;
+	size_t i = 0;
+	for (const auto& vertexNormal : m_vertexNormals) {
+		vertices.emplace_back(m_Positions[i]);
+		vertices.emplace_back(m_Positions[i] + vertexNormal);
+		++i;
+	}
+
+	if (m_VertexNormalsVAO == 0) {
+		glGenVertexArrays(1, &m_VertexNormalsVAO);
+		glGenBuffers(1, &m_VertexNormalsVBO);
+	}
+
+	glBindVertexArray(m_VertexNormalsVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexNormalsVBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);

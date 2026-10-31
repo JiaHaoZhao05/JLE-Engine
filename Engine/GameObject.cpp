@@ -159,9 +159,22 @@ void GameObject::RenderNormalsPerTriangle()
 	if (!meshComponent) return;
 
 	Mesh& mesh = meshComponent->mesh;
-	if (mesh.m_NormalsVAO == 0 || mesh.m_triangleNormals.size() == 0) return;
+	if (mesh.m_FaceNormalsVAO == 0 || mesh.m_triangleNormals.size() == 0) return;
 
-	glBindVertexArray(mesh.m_NormalsVAO);
+	glBindVertexArray(mesh.m_FaceNormalsVAO);
 	glDrawArrays(GL_LINES, 0, mesh.m_triangleNormals.size() * 2);
+	glBindVertexArray(0);
+}
+
+void GameObject::RenderVertexNormals()
+{
+	auto* meshComponent = static_cast<MeshComponent*>(GetComponent(ComponentType::MESH));
+	if (!meshComponent) return;
+
+	Mesh& mesh = meshComponent->mesh;
+	if (mesh.m_vertexNormals.size() == 0) return;
+
+	glBindVertexArray(mesh.m_VertexNormalsVAO);
+	glDrawArrays(GL_LINES, 0, mesh.m_vertexNormals.size() * 2);
 	glBindVertexArray(0);
 }

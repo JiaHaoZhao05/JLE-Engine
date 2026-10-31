@@ -91,7 +91,6 @@ public:
 	std::vector<MeshEntry> m_Meshes;
 
 	std::vector<glm::vec3> m_Positions; //vertex positions
-	std::vector<glm::vec3> m_Normals; //vertex normals
 	std::vector<Vector2f> m_TextCoords; //UVs 
 	std::vector<unsigned int> m_Indices;
 
@@ -99,8 +98,16 @@ public:
 	//triangle normals
 	std::vector<FaceNormal> m_triangleNormals;
 
-	GLuint m_NormalsVAO = 0;
-	GLuint m_NormalsVBO = 0;
+	GLuint m_FaceNormalsVAO = 0;
+	GLuint m_FaceNormalsVBO = 0;
 
-	void PopulateNormalsBuffers();
+	void PopulateFaceNormalsBuffers();
+
+	//vertex normals
+	std::vector<glm::vec3> m_vertexNormals; //vertex normals loaded with Assimp
+
+	GLuint m_VertexNormalsVAO = 0;
+	GLuint m_VertexNormalsVBO = 0;
+
+	void PopulateVertexNormalBuffers();
 };
