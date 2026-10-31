@@ -101,6 +101,8 @@ bool TextureLoader::LoadFromFile(Texture* tex,const std::string& fileName, bool&
 		return false;
 	}
 
+	tex->byteSize = ilGetInteger(IL_IMAGE_SIZE_OF_DATA);
+
 	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
 	//texID -> m_textureObj m stands for mesh

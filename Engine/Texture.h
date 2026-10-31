@@ -15,4 +15,5 @@ public:
 
     std::string m_fileName;
     GLuint m_textureObj = 0;
+    size_t byteSize;
 };

@@ -18,4 +18,6 @@ public:
 	bool LoadFromFile(Texture* tex, const std::string& fileName, bool& hasTexture);
 
 	bool ChangeTexture(std::vector<Texture*>& m_Tex, unsigned int materialIndex, const std::string& fileName, bool& hasTexture);
+
+
 };

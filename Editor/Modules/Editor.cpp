@@ -441,9 +441,13 @@ bool Editor::PostUpdate() {
                     }
 
                     if (ImGui::CollapsingHeader("MATERIAL", ImGuiTreeNodeFlags_DefaultOpen)) {
-                        auto* materialComponent = static_cast<MeshComponent*>(selectedObject->GetComponent(ComponentType::MESH));
+                        auto* materialComponent = static_cast<MaterialComponent*>(selectedObject->GetComponent(ComponentType::MATERIAL));
                         if (materialComponent) {
-
+                            for (const auto& texture : materialComponent->m_Textures) {
+                                ImGui::Text("");
+                                ImGui::Text("Texture path: %s", texture->m_fileName.c_str());
+                                ImGui::Text("Texture size: %i", texture->byteSize, " bytes");
+                            }
                         }
                         else {
                             ImGui::Text("No material");
