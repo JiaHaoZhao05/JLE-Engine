@@ -11,18 +11,6 @@
 
 #define INVALID_MATERIAL 0xFFFFFFFF
 
-struct Vector3f {
-	union {
-		struct {
-			float x, y, z;
-		};
-		struct {
-			float data[3];
-		};
-	};
-	Vector3f() : Vector3f(0, 0, 0) {}
-	Vector3f(float x, float y, float z) : x(x), y(y), z(z) {}
-};
 struct Vector2f {
 	union {
 		struct {
