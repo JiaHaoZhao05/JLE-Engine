@@ -198,7 +198,7 @@ bool Editor::PostUpdate() {
                 SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine/issues");
             }
             if (ImGui::MenuItem("Download Latest:")) {
-                SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine");
+                SDL_OpenURL("https://github.com/ErikArgemi/JLE-Engine/releases");
             }
             if (ImGui::MenuItem("About")) {
                 editorSettings.showAbout = true;
