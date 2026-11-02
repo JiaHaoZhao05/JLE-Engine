@@ -39,11 +39,9 @@ public:
     //Called when ALL the windows are in need of a resize
     void ResizeWindows(ImVec2 windowSize);
 
-    //Open File Explorer to import models
-    void FileExplorerFor3D();
-
     //For Loading
     void Set3DFileToLoad(std::string name) { fileToLoad3D = name; }
+    void SetTextureToLoad(std::string name) { fileTextureToChange = name; }
 private:
     //Called to rescale a window
     void RescaleWindow(std::string window);
@@ -57,6 +55,11 @@ private:
     //Process dropfile
     void ProcessDropFile(const std::string fileFullPath);
 
+    //Open File Explorer to import models
+    void FileExplorerFor3D();
+
+    //OpenFile Explorer to Import/Change Textures
+    void FileExplorerTextures();
 public:
     // Window Resolution
     const int SCREEN_WIDTH = 1920;
@@ -67,6 +70,7 @@ public:
 
 private:
     std::string fileToLoad3D;
+    std::string fileTextureToChange;
     std::vector<std::string> windows;
     ImVec2 currentWindowSize;
     ImVec2 prevWindowsSize{ 1920, 1080 };

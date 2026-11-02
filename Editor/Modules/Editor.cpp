@@ -471,11 +471,32 @@ bool Editor::PostUpdate() {
                             }
                             materialComponent->changeToCheckers = materialComponent->checkersTexture;
                         }
-                        for (const auto& texture : materialComponent->m_Textures) {
-                            if (texture == NULL) continue;
-                            ImGui::Text("");
-                            ImGui::Text("Texture path: %s", texture->m_fileName.c_str());
-                            ImGui::Text("Texture size: %i", texture->byteSize, " bytes");
+                        for (int i = 0; i < materialComponent->m_Textures.size();i++) {
+                        //for (const auto& texture : materialComponent->m_Textures) {
+                            ImGui::PushID(i);
+                            if (ImGui::Button("Change Texture")) {
+                                FileExplorerTextures();
+                            }
+                            ImGui::PopID();
+                            if (!fileTextureToChange.empty()) {
+                                bool hasTexture = false;
+                                App::GetInstance().textureLoader->ChangeTexture(materialComponent->m_Textures, i, fileTextureToChange, hasTexture);
+                                if (!hasTexture) {
+                                    LOG("ERROR WHEN RECEIVING THE TEXTURE");
+                                }
+                                else {
+                                    LOG("Texture charged: " + fileTextureToChange);
+                                }
+                                fileTextureToChange.clear();
+                            }
+                            if (materialComponent->m_Textures[i] == NULL) {
+                                ImGui::Text("No Texture path in this channel");
+                                ImGui::Separator();
+                                continue; 
+                            }
+                            ImGui::Text("Texture path: %s", materialComponent->m_Textures[i]->m_fileName.c_str());
+                            ImGui::Text("Texture size: %i", materialComponent->m_Textures[i]->byteSize, " bytes");
+                            ImGui::Separator();
                         }
                     }
                     else {
@@ -668,6 +689,28 @@ void Editor::FileExplorerFor3D() {
         std::string path = filelist[0];
         LOG("Loaded file path: " + path);
         App::GetInstance().editor->Set3DFileToLoad(path);
+        },
+        nullptr, nullptr, filters, 1, nullptr, false
+    );
+}
+
+void Editor::FileExplorerTextures() {
+    std::string selectedPath;
+    const SDL_DialogFileFilter filters[] = {
+        { "Texture", "png;dds" }
+    };
+
+    SDL_ShowOpenFileDialog([](void* userdata, const char* const* filelist, int filter) {
+        if (!filelist) {
+            LOG("An error occured: %s", SDL_GetError());
+            return;
+        }
+        if (filelist[0] == NULL) {
+            return;
+        }
+        std::string path = filelist[0];
+        LOG("Loaded file path: " + path);
+        App::GetInstance().editor->SetTextureToLoad(path);
         },
         nullptr, nullptr, filters, 1, nullptr, false
     );
